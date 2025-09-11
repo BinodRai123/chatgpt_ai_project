@@ -38,8 +38,23 @@ function initSocketServer(httpServer){
     io.on("connection",(socket) => {
         console.log("user is connected");
 
-        socket.on("ai-message",async (message) => {
-           const response = await generateResponse(message.title);
+        socket.on("ai-message",async (payLoad) => {
+
+            await messageModel.create({
+                chat:payLoad.chat,
+                user:socket.user._id,
+                content:payLoad.content,
+                role:"user"
+            })
+
+           const response = await generateResponse(payLoad.content);
+
+           await messageModel.create({
+                chat:payLoad.chat,
+                user:socket.user._id,
+                content:response,
+                role:"model"
+            })
 
            //send message to frontend
            socket.emit("ai-message-response",{reponse:response});
