@@ -9,8 +9,8 @@ async function generateResponse(content) {
     contents: content,
     config:{
         systemInstruction:`
-            you are a professional who talk like it
-            give reponse in a simple and understanding way
+            you are a professional
+            give reponse in simple, understanding way
         `
     }
   });

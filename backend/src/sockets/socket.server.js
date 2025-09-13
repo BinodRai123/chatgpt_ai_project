@@ -13,7 +13,7 @@ const messageModel = require("../models/message.model");
 function initSocketServer(httpServer){
     const io = new Server(httpServer,{});
 
-    /* using Middleware */
+    /* USING MIDDLEWARE */
     io.use(async (socket, next) => {
         //use or operator to avoid error
         const cookies = cookie.parse(socket.handshake.headers.cookie || "");
@@ -39,6 +39,7 @@ function initSocketServer(httpServer){
         console.log("user is connected");
 
         socket.on("ai-message",async (payLoad) => {
+            /* payLoad = {chat: chatId, content:message text } */
 
             await messageModel.create({
                 chat:payLoad.chat,
@@ -47,9 +48,9 @@ function initSocketServer(httpServer){
                 role:"user"
             })
 
-            const chatHistory = await messageModel.find({
+            const chatHistory = (await messageModel.find({
                 chat: payLoad.chat
-            })
+            }).sort({createdAt: -1}).limit(20).lean()).reverse();
 
            const response = await generateResponse(chatHistory.map(item => {
                 return {
