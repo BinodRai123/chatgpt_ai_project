@@ -9,6 +9,7 @@ const chatgptIndex = pc.index('chatgpt-project');
 
 
 async function createMemory({vector, metadata, messageId}){
+    console.log(metadata.text)
     await chatgptIndex.upsert([ {
         id: messageId,
         values: vector,
@@ -20,7 +21,8 @@ async function  queryMemory({ queryVector, limit = 5, metadata }){
     const data = await chatgptIndex.query({
         vector: queryVector,
         topK: limit,
-        filter: metadata ? {metadata} : undefined
+        filter: metadata && Object.keys(metadata).length > 0 ? metadata : undefined,
+        includeMetadata: true,
     })
 
     return data.matches;
@@ -28,5 +30,6 @@ async function  queryMemory({ queryVector, limit = 5, metadata }){
 
 
 module.exports = {
-    createMemory
+    createMemory,
+    queryMemory
 }

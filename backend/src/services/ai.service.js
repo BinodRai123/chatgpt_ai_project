@@ -7,15 +7,31 @@ async function generateResponse(content) {
   const response = await ai.models.generateContent({
     model: "gemini-2.0-flash",
     contents: content,
-    config:{
-        systemInstruction:`
+    config: {
+      systemInstruction: `
             you are a professional
             give reponse in simple, understanding way
-        `
-    }
+        `,
+    },
   });
-  
+
   return response.text;
 }
 
-module.exports = generateResponse;
+async function generateVector(content) {
+  console.log(content);
+  const response = await ai.models.embedContent({
+    model: "gemini-embedding-001",
+    contents: content,
+    config: {
+      outputDimensionality: 768,
+    },
+  });
+
+  return response.embeddings[0].values;
+}
+
+module.exports = {
+  generateResponse,
+  generateVector,
+};
